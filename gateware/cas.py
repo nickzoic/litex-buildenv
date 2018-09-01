@@ -11,6 +11,8 @@ from migen.genlib.misc import WaitTimer
 
 from litex.soc.cores.gpio import GPIOIn, GPIOOut
 
+from gateware.pwm import MiniPWM
+
 class ControlAndStatus(Module, AutoCSR):
     def __init__(self, platform, clk_freq):
 
@@ -22,13 +24,17 @@ class ControlAndStatus(Module, AutoCSR):
             except ConstraintError:
                 break
 
-        if user_leds:
-            leds = Signal(len(user_leds))
-            self.submodules.leds = GPIOOut(leds)
-            for i in range(0, len(user_leds)):
-                self.comb += [
-                    user_leds[i].eq(leds[i]),
-                ]
+        for n, x in enumerate(user_leds):
+            setattr(self.submodules, "led%d" % n, MiniPWM(x, 8))
+
+        #if user_leds:
+        #    leds = Signal(len(user_leds))
+        #    self.submodules.leds = GPIOOut(leds)
+        #    for i in range(0, len(user_leds)):
+        #        self.comb += [
+        #            user_leds[i].eq(leds[i]),
+        #        ]
+
         self._leds_count = CSRConstant(len(user_leds))
 
         # Work out how many switches this board has

@@ -19,4 +19,4 @@ class RGBLed(Module, AutoCSR):
 
         for n in range(nleds):
             for c in "rgb":
-                setattr(self.submodules, c+str(n), PWM(getattr(pads, c)[n]))
+                setattr(self.submodules, c+str(n), PWM(getattr(pads, c)[n], 8))
